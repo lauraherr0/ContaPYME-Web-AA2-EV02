@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usuarios | ContaPYME</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f5f5;color:#193132;font:16px system-ui}header{background:#163d3b;color:white;padding:24px max(5%,calc((100% - 1100px)/2))}header p{margin:0;font-weight:700}main{max-width:1100px;margin:32px auto;padding:0 18px}h1{margin-top:0}h2{margin-top:0;font-size:1.2rem}.layout{display:grid;grid-template-columns:minmax(250px,1fr) minmax(0,2fr);gap:22px}.panel{background:white;border:1px solid #dae5e3;border-radius:12px;padding:20px}label{font-weight:600}input,select,button{font:inherit;padding:8px;border-radius:6px;border:1px solid #8ea7a4}input,select{width:100%;margin-top:4px}button{background:#166458;color:white;cursor:pointer}.filtro{display:grid;grid-template-columns:2fr 1fr auto;gap:10px;align-items:end}table{width:100%;border-collapse:collapse;margin-top:15px}th,td{padding:10px;text-align:left;border-bottom:1px solid #dae5e3}.tabla{overflow:auto}.ok{background:#d5efdf;padding:10px}.errorlist{color:#a52626}@media(max-width:760px){.layout,.filtro{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><p>ContaPYME</p></header>
+<main>
+<h1>Usuarios</h1>
+{% if guardado %}<p class="ok" role="status">Usuario registrado correctamente.</p>{% endif %}
+<div class="layout">
+<section class="panel">
+<h2>Registrar usuario</h2>
+<form method="post" action="{% url 'usuarios' %}">
+{% csrf_token %}
+{{ formulario.as_p }}
+<button type="submit">Guardar usuario</button>
+</form>
+</section>
+<section class="panel">
+<h2>Usuarios registrados</h2>
+<form class="filtro" method="get" action="{% url 'usuarios' %}">
+<div>{{ filtro.q.label_tag }}{{ filtro.q }}{{ filtro.q.errors }}</div>
+<div>{{ filtro.estado.label_tag }}{{ filtro.estado }}{{ filtro.estado.errors }}</div>
+<button type="submit">Buscar</button>
+</form>
+<div class="tabla">
+<table>
+<thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Empresa</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+<tbody>
+{% for usuario in registros %}
+<tr><td>{{ usuario.id }}</td><td>{{ usuario.nombre }}</td><td>{{ usuario.correo }}</td><td>{{ usuario.empresa.nombre }}</td><td>{{ usuario.rol.nombre }}</td><td>{{ usuario.estado|yesno:"Activo,Inactivo,Sin definir" }}</td><td><a href="{% url 'editar' usuario.id %}">Editar</a> · <a href="{% url 'eliminar' usuario.id %}">Eliminar</a></td></tr>
+{% empty %}
+<tr><td colspan="7">No hay usuarios para mostrar.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<p>Se muestran hasta 100 registros.</p>
+</section>
+</div>
+</main>
+</body>
+</html>
